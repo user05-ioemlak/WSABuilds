@@ -200,6 +200,9 @@ ARGUMENT_LIST=(
     "skip-download-wsa"
     "help"
     "debug"
+    "gapps-brand:"   # Add this
+    "custom-model:"  # Add this
+    "after-compress" # Add this
 )
 
 default
@@ -237,6 +240,18 @@ while [[ $# -gt 0 ]]; do
             ;;
         --magisk-custom)
             CUSTOM_MAGISK=1
+            shift
+            ;;
+            --gapps-brand)
+            GAPPS_BRAND="$2"
+            shift 2
+            ;;
+        --custom-model)
+            CUSTOM_MODEL="$2"
+            shift 2
+            ;;
+        --after-compress)
+            AFTER_COMPRESS=1
             shift
             ;;
         --install-gapps)

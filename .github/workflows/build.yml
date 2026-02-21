@@ -83,9 +83,27 @@ jobs:
       - name: Build WSA ${{ inputs.arch }} with GApps ${{ inputs.root }} 🏗️
         id: wsa
         working-directory: MagiskOnWSA
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod -R 777 ./
           mkdir -p download
+          
+          # [DÜZELTME] Magisk indirme linklerinin GitHub API limitine takılması veya kırık olması
+          # sebebiyle oluşan "Offline mode: missing magisk-*.zip" hatasını önlemek için manuel indirme adımı:
+          echo "Magisk sürümü kontrol ediliyor ve offline mode hatasını önlemek için manuel indiriliyor..."
+          if [ "${{ inputs.magiskver }}" == "alpha" ]; then
+            curl -sL "https://github.com/vvb2060/magisk_files/raw/alpha/app-release.apk" -o download/magisk-alpha.zip
+          elif [ "${{ inputs.magiskver }}" == "canary" ]; then
+            curl -sL "https://raw.githubusercontent.com/topjohnwu/magisk-files/canary/app-release.apk" -o download/magisk-canary.zip
+          elif [ "${{ inputs.magiskver }}" == "beta" ]; then
+            curl -sL "https://raw.githubusercontent.com/topjohnwu/magisk-files/beta/app-release.apk" -o download/magisk-beta.zip
+          elif [ "${{ inputs.magiskver }}" == "stable" ]; then
+            curl -sL "https://raw.githubusercontent.com/topjohnwu/magisk-files/master/app-release.apk" -o download/magisk-stable.zip
+          elif [ "${{ inputs.magiskver }}" == "delta" ]; then
+            curl -sL "https://raw.githubusercontent.com/HuskyDG/magisk-files/main/app-release.apk" -o download/magisk-delta.zip
+          fi
+
           ./scripts/build.sh \
             --arch ${{ inputs.arch }} \
             --release-type WIF \

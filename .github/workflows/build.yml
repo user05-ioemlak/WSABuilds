@@ -79,8 +79,18 @@ jobs:
         run: |
           chmod -R 777 ./
           mkdir -p download
-          ./scripts/build.sh --arch ${{ inputs.arch }} --release-type WIF --magisk-ver ${{ inputs.magiskver }} ${{ inputs.gapps }} --root-sol ${{ inputs.root }} ${{ inputs.amazonflag }} --compress-format none
-
+          # Yeni eklenen parametreleri (--gapps-brand ve --custom-model) buraya dahil ettik
+          ./scripts/build.sh \
+            --arch ${{ inputs.arch }} \
+            --release-type WIF \
+            --magisk-ver ${{ inputs.magiskver }} \
+            ${{ inputs.gapps }} \
+            --gapps-brand ${{ inputs.gappsver }} \
+            --root-sol ${{ inputs.root }} \
+            --custom-model ${{ inputs.devicemodel }} \
+            ${{ inputs.amazonflag }} \
+            --compress-format none
+            
       - name: Install Houdini and Process Images 🔧
         working-directory: MagiskOnWSA
         run: |      

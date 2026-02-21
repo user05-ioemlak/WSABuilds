@@ -89,9 +89,8 @@ jobs:
           chmod -R 777 ./
           mkdir -p download
           
-          # [DÜZELTME] Magisk indirme linklerinin GitHub API limitine takılması veya kırık olması
-          # sebebiyle oluşan "Offline mode: missing magisk-*.zip" hatasını önlemek için manuel indirme adımı:
-          echo "Magisk sürümü kontrol ediliyor ve offline mode hatasını önlemek için manuel indiriliyor..."
+          # Magisk Fallback
+          echo "Magisk sürümü kontrol ediliyor..."
           if [ "${{ inputs.magiskver }}" == "alpha" ]; then
             curl -sL "https://github.com/vvb2060/magisk_files/raw/alpha/app-release.apk" -o download/magisk-alpha.zip
           elif [ "${{ inputs.magiskver }}" == "canary" ]; then
@@ -104,11 +103,18 @@ jobs:
             curl -sL "https://raw.githubusercontent.com/HuskyDG/magisk-files/main/app-release.apk" -o download/magisk-delta.zip
           fi
 
+          # GApps komutunu zorunlu kılma (DÜZELTME BURADA)
+          GAPPS_CMD="${{ inputs.gapps }}"
+          if [[ "${{ inputs.gappsver }}" != "none" && "${{ inputs.gappsver }}" != "" ]]; then
+            GAPPS_CMD="--install-gapps"
+            echo "GApps komutu eklendi: $GAPPS_CMD"
+          fi
+
           ./scripts/build.sh \
             --arch ${{ inputs.arch }} \
             --release-type WIF \
             --magisk-ver ${{ inputs.magiskver }} \
-            ${{ inputs.gapps }} \
+            $GAPPS_CMD \
             --gapps-brand ${{ inputs.gappsver }} \
             --root-sol ${{ inputs.root }} \
             --custom-model ${{ inputs.devicemodel }} \

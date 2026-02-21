@@ -120,6 +120,7 @@ MAGISK_VER_MAP=(
     "canary"
     "debug"
     "release"
+    "alpha"
 )
 
 ROOT_SOL_MAP=(

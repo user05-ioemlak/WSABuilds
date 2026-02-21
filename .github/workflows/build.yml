@@ -86,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod -R 777 ./
-          mkdir -p download
+          mkdir -p download          
           
           # Magisk Fallback - İndirme limitlerine karşı manuel koruma
           echo "Magisk sürümü kontrol ediliyor..."
@@ -103,21 +103,21 @@ jobs:
           fi
 
           # GApps komutunu zorunlu kılma
-          GAPPS_CMD="${{ inputs.gapps }}"
-          if [[ "${{ inputs.gappsver }}" != "none" && "${{ inputs.gappsver }}" != "No GApps" && "${{ inputs.gappsver }}" != "" ]]; then
+          GAPPS_CMD=""
+          if [[ "${{ inputs.gappsver }}" != "none" && "${{ inputs.gappsver }}" != "" && "${{ inputs.gappsver }}" != "No GApps" ]]; then
             GAPPS_CMD="--install-gapps"
             echo "Arayüzden GApps seçildi, kurulum komutu eklendi: $GAPPS_CMD"
           fi
 
           # Scripti boşluklu isimleri bozmadan (tırnak içinde) çalıştırma
           ./scripts/build.sh \
-            --arch "${{ inputs.arch }}" \
+            --arch ${{ inputs.arch }} \
             --release-type WIF \
-            --magisk-ver "${{ inputs.magiskver }}" \
+            --magisk-ver ${{ inputs.magiskver }} \
             $GAPPS_CMD \
-            --gapps-brand "${{ inputs.gappsver }}" \
-            --root-sol "${{ inputs.root }}" \
-            --custom-model "${{ inputs.devicemodel }}" \
+            --gapps-brand ${{ inputs.gappsver }} \
+            --root-sol ${{ inputs.root }} \
+            --custom-model ${{ inputs.devicemodel }} \
             ${{ inputs.amazonflag }} \
             --compress-format none
 

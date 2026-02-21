@@ -17,12 +17,12 @@ on:
       amazonflag:
         type: string
       compressformat:
-       type: string
+        type: string
       wsa_ver:
         type: string
       gappsver:
-        type: string    
-        
+        type: string
+
 jobs:
   build:
     name: Build WSA
@@ -73,13 +73,19 @@ jobs:
           echo ${{ inputs.wsa_ver }}
           echo ${{ inputs.gappsver }}
 
+      - name: Restore Build Cache 🗄️
+        uses: actions/cache/restore@v4
+        with:
+          path: MagiskOnWSA/output
+          key: WSA_${{ inputs.wsa_ver }}_${{ inputs.arch }}_${{ inputs.insider }}-${{ inputs.root }}-${{ inputs.gapps }}
+          fail-on-cache-miss: false
+          
       - name: Build WSA ${{ inputs.arch }} with GApps ${{ inputs.root }} 🏗️
         id: wsa
         working-directory: MagiskOnWSA
         run: |
           chmod -R 777 ./
           mkdir -p download
-          # Yeni eklenen parametreleri (--gapps-brand ve --custom-model) buraya dahil ettik
           ./scripts/build.sh \
             --arch ${{ inputs.arch }} \
             --release-type WIF \
@@ -90,7 +96,7 @@ jobs:
             --custom-model ${{ inputs.devicemodel }} \
             ${{ inputs.amazonflag }} \
             --compress-format none
-            
+
       - name: Install Houdini and Process Images 🔧
         working-directory: MagiskOnWSA
         run: |      
@@ -174,6 +180,12 @@ jobs:
         working-directory: MagiskOnWSA
         run: |
           ls -lR
+
+      - name: Save Build Cache 💾
+        uses: actions/cache/save@v4
+        with:
+          path: MagiskOnWSA/output
+          key: WSA_${{ inputs.wsa_ver }}_${{ inputs.arch }}_${{ inputs.insider }}-${{ inputs.root }}-${{ inputs.gapps }}
 
       - name: Upload Windows 11 x64 build to release 🤌
         uses: softprops/action-gh-release@v2

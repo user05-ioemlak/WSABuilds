@@ -61,17 +61,16 @@ jobs:
 
       - name: Check workflow inputs
         run: |
-          echo ${{ inputs.arch }}
-          echo ${{ inputs.gapps }}
-          echo ${{ inputs.root }}
-          echo ${{ inputs.insider }}
-          echo ${{ inputs.magiskver }}
-          echo ${{ inputs.devicemodel }}
-          echo ${{ inputs.amazonflag }}
-          echo ${{ inputs.compressformat }}
-          echo ${{ inputs.release_type }}
-          echo ${{ inputs.wsa_ver }}
-          echo ${{ inputs.gappsver }}
+          echo "${{ inputs.arch }}"
+          echo "${{ inputs.gapps }}"
+          echo "${{ inputs.root }}"
+          echo "${{ inputs.insider }}"
+          echo "${{ inputs.magiskver }}"
+          echo "${{ inputs.devicemodel }}"
+          echo "${{ inputs.amazonflag }}"
+          echo "${{ inputs.compressformat }}"
+          echo "${{ inputs.wsa_ver }}"
+          echo "${{ inputs.gappsver }}"
 
       - name: Restore Build Cache 🗄️
         uses: actions/cache/restore@v4
@@ -89,7 +88,7 @@ jobs:
           chmod -R 777 ./
           mkdir -p download
           
-          # Magisk Fallback
+          # Magisk Fallback - İndirme limitlerine karşı manuel koruma
           echo "Magisk sürümü kontrol ediliyor..."
           if [ "${{ inputs.magiskver }}" == "alpha" ]; then
             curl -sL "https://github.com/vvb2060/magisk_files/raw/alpha/app-release.apk" -o download/magisk-alpha.zip
@@ -103,21 +102,22 @@ jobs:
             curl -sL "https://raw.githubusercontent.com/HuskyDG/magisk-files/main/app-release.apk" -o download/magisk-delta.zip
           fi
 
-          # GApps komutunu zorunlu kılma (DÜZELTME BURADA)
+          # GApps komutunu zorunlu kılma
           GAPPS_CMD="${{ inputs.gapps }}"
-          if [[ "${{ inputs.gappsver }}" != "none" && "${{ inputs.gappsver }}" != "" ]]; then
+          if [[ "${{ inputs.gappsver }}" != "none" && "${{ inputs.gappsver }}" != "No GApps" && "${{ inputs.gappsver }}" != "" ]]; then
             GAPPS_CMD="--install-gapps"
-            echo "GApps komutu eklendi: $GAPPS_CMD"
+            echo "Arayüzden GApps seçildi, kurulum komutu eklendi: $GAPPS_CMD"
           fi
 
+          # Scripti boşluklu isimleri bozmadan (tırnak içinde) çalıştırma
           ./scripts/build.sh \
-            --arch ${{ inputs.arch }} \
+            --arch "${{ inputs.arch }}" \
             --release-type WIF \
-            --magisk-ver ${{ inputs.magiskver }} \
+            --magisk-ver "${{ inputs.magiskver }}" \
             $GAPPS_CMD \
-            --gapps-brand ${{ inputs.gappsver }} \
-            --root-sol ${{ inputs.root }} \
-            --custom-model ${{ inputs.devicemodel }} \
+            --gapps-brand "${{ inputs.gappsver }}" \
+            --root-sol "${{ inputs.root }}" \
+            --custom-model "${{ inputs.devicemodel }}" \
             ${{ inputs.amazonflag }} \
             --compress-format none
 
